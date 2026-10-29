@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Kalist</title>
+<link rel="stylesheet" href="style.css">
+<style>
+main { text-align: center; padding-top: 72px; }
+.pastille { width: 72px; height: 72px; margin: 0 auto 24px; display: grid; place-items: center; background: var(--rouge); color: #fff; font: 900 40px/1 Impact, sans-serif; }
+.pastille.echec { background: var(--surface); border: 1px solid var(--ligne); color: var(--lien); }
+h1 { font-size: clamp(28px, 8vw, 40px); overflow-wrap: anywhere; }
+#texte { max-width: 460px; margin: 0 auto; font-size: 18px; }
+</style>
+</head>
+<body>
+<header class="entete"><a class="marque" href="index.html">KAL<span>I</span>ST</a></header>
+<main>
+<div class="pastille" id="pastille" aria-hidden="true">✓</div>
+<h1 id="titre">Adresse confirmée</h1>
+<p id="texte">Ton compte Kalist est activé. Retourne dans l'application et connecte-toi.</p>
+</main>
+<footer>Kalist — <a href="mailto:bibine.contact@gmail.com">bibine.contact@gmail.com</a> · <a href="confidentialite.html">Confidentialité</a> · <a href="conditions.html">Conditions d'utilisation</a></footer>
+<script>
+// Page d'arrivee du lien de confirmation envoye par Supabase (Site URL du
+// projet). Supabase ajoute a l'adresse le jeton de session, ou une erreur
+// si le lien a expire ou deja servi.
+var T = {
+  fr: ['Adresse confirmée', "Ton compte Kalist est activé. Retourne dans l'application et connecte-toi.", 'Lien expiré', "Ce lien n'est plus valide ou a déjà servi. Si ton compte n'est pas encore activé, inscris-toi à nouveau dans l'application avec la même adresse : un nouveau lien te sera envoyé."],
+  en: ['Email confirmed', 'Your Kalist account is active. Go back to the app and sign in.', 'Link expired', 'This link is no longer valid or has already been used. If your account is not active yet, sign up again in the app with the same email address: a new link will be sent to you.'],
+  es: ['Correo confirmado', 'Tu cuenta de Kalist está activada. Vuelve a la app e inicia sesión.', 'Enlace caducado', 'Este enlace ya no es válido o ya se ha usado. Si tu cuenta aún no está activada, vuelve a registrarte en la app con el mismo correo: te enviaremos un enlace nuevo.'],
+  de: ['E-Mail bestätigt', 'Dein Kalist-Konto ist aktiviert. Kehre zur App zurück und melde dich an.', 'Link abgelaufen', 'Dieser Link ist nicht mehr gültig oder wurde bereits verwendet. Falls dein Konto noch nicht aktiviert ist, registriere dich in der App erneut mit derselben E-Mail-Adresse: Du erhältst einen neuen Link.'],
+  it: ['Email confermata', "Il tuo account Kalist è attivo. Torna nell'app ed effettua l'accesso.", 'Link scaduto', "Questo link non è più valido o è già stato usato. Se il tuo account non è ancora attivo, registrati di nuovo nell'app con lo stesso indirizzo email: riceverai un nuovo link."],
+  pt: ['E-mail confirmado', 'Sua conta Kalist está ativada. Volte ao app e faça login.', 'Link expirado', 'Este link não é mais válido ou já foi usado. Se sua conta ainda não está ativada, cadastre-se de novo no app com o mesmo e-mail: você receberá um novo link.'],
+  nl: ['E-mailadres bevestigd', 'Je Kalist-account is geactiveerd. Ga terug naar de app en log in.', 'Link verlopen', 'Deze link is niet meer geldig of is al gebruikt. Is je account nog niet geactiveerd? Registreer je dan opnieuw in de app met hetzelfde e-mailadres: je krijgt een nieuwe link.'],
+  pl: ['Adres e-mail potwierdzony', 'Twoje konto Kalist jest aktywne. Wróć do aplikacji i zaloguj się.', 'Link wygasł', 'Ten link jest już nieważny lub został użyty. Jeśli Twoje konto nie jest jeszcze aktywne, zarejestruj się ponownie w aplikacji, używając tego samego adresu e-mail: wyślemy Ci nowy link.'],
+  tr: ['E-posta onaylandı', 'Kalist hesabın etkinleştirildi. Uygulamaya dön ve giriş yap.', 'Bağlantının süresi doldu', 'Bu bağlantı artık geçerli değil veya zaten kullanıldı. Hesabın henüz etkin değilse uygulamada aynı e-posta adresiyle yeniden kaydol: sana yeni bir bağlantı gönderilecek.'],
+  id: ['Email dikonfirmasi', 'Akun Kalist kamu sudah aktif. Kembali ke aplikasi dan masuk.', 'Tautan kedaluwarsa', 'Tautan ini sudah tidak berlaku atau sudah digunakan. Jika akunmu belum aktif, daftar lagi di aplikasi dengan email yang sama: tautan baru akan dikirim kepadamu.'],
+  vi: ['Email đã được xác nhận', 'Tài khoản Kalist của bạn đã được kích hoạt. Hãy quay lại ứng dụng và đăng nhập.', 'Liên kết đã hết hạn', 'Liên kết này không còn hiệu lực hoặc đã được sử dụng. Nếu tài khoản của bạn chưa được kích hoạt, hãy đăng ký lại trong ứng dụng bằng cùng địa chỉ email: bạn sẽ nhận được liên kết mới.'],
+  ru: ['Адрес подтверждён', 'Твой аккаунт Kalist активирован. Вернись в приложение и войди.', 'Ссылка устарела', 'Эта ссылка больше не действует или уже использована. Если аккаунт ещё не активирован, зарегистрируйся в приложении снова с тем же адресом: мы пришлём новую ссылку.'],
+  uk: ['Адресу підтверджено', 'Твій акаунт Kalist активовано. Повернися до застосунку й увійди.', 'Посилання застаріло', 'Це посилання більше не дійсне або вже використане. Якщо акаунт ще не активовано, зареєструйся в застосунку знову з тією самою адресою: ми надішлемо нове посилання.'],
+  ja: ['メールアドレスを確認しました', 'Kalist アカウントが有効になりました。アプリに戻ってログインしてください。', 'リンクの有効期限切れ', 'このリンクは無効か、すでに使用されています。アカウントがまだ有効になっていない場合は、同じメールアドレスでアプリから再度登録してください。新しいリンクをお送りします。'],
+  ko: ['이메일이 확인되었습니다', 'Kalist 계정이 활성화되었어요. 앱으로 돌아가 로그인하세요.', '링크가 만료되었습니다', '이 링크는 더 이상 유효하지 않거나 이미 사용되었어요. 계정이 아직 활성화되지 않았다면 앱에서 같은 이메일로 다시 가입하세요. 새 링크를 보내드려요.'],
+  zh: ['邮箱已确认', '你的 Kalist 账号已激活。返回应用并登录吧。', '链接已失效', '此链接已失效或已被使用。如果你的账号尚未激活，请在应用中使用同一邮箱重新注册，我们会给你发送新的链接。'],
+  hi: ['ईमेल की पुष्टि हो गई', 'आपका Kalist खाता सक्रिय हो गया है। ऐप पर वापस जाएँ और लॉग इन करें।', 'लिंक की समय-सीमा समाप्त', 'यह लिंक अब मान्य नहीं है या पहले ही इस्तेमाल हो चुका है। अगर आपका खाता अभी सक्रिय नहीं है, तो ऐप में उसी ईमेल से फिर से साइन अप करें: आपको नया लिंक भेजा जाएगा।']
+};
+var langues = (navigator.languages || [navigator.language || 'en']).map(function (l) { return String(l).slice(0, 2).toLowerCase(); });
+var langue = langues.filter(function (l) { return T[l]; })[0] || 'en';
+var echec = /error/.test(location.hash + location.search);
+var t = T[langue];
+document.documentElement.lang = langue;
+document.getElementById('titre').textContent = echec ? t[2] : t[0];
+document.getElementById('texte').textContent = echec ? t[3] : t[1];
+if (echec) {
+  var p = document.getElementById('pastille');
+  p.textContent = '!';
+  p.className = 'pastille echec';
+}
+// Le jeton de session n'a rien a faire dans la barre d'adresse.
+if (location.hash || location.search) history.replaceState(null, '', location.pathname);
+</script>
+</body>
+</html>
